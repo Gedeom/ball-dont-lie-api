@@ -1,66 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ball Don't Lie
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Credenciais de usuário para login
 
-## About Laravel
+- Email: admin@email.com
+- Password: 12345678
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Iniciar o projeto com Docker
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Execute o comando `cp .env.example .env` para copiar o arquivo de exemplo de ambiente.
+2. Execute o comando `docker-compose up -d --build` para criar os containers.
+3. Execute o comando `docker-compose exec app composer install` para instalar as dependências do projeto.
+4. Execute o comando `docker-compose exec app php artisan key:generate` para gerar a chave do projeto.
+5. Execute o comando `docker-compose exec app php artisan migrate` para criar as tabelas do banco de dados.
+6. Execute o comando `docker-compose exec app php artisan db:seed` para popular as tabelas do banco de dados com dados fictícios.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Passo a passo para executar o projeto
 
-## Learning Laravel
+1. Execute o comando `docker-compose up -d` para criar os containers.
+2. Abra o navegador e acesse a URL `http://localhost:8888`.
+3. Clique no botão "Login" e faça o login com as credenciais do banco de dados.
+4. Clique no botão "Dashboard" e visualize as informações do projeto.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Executar Jobs de importação de dados
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. Execute o comando `docker-compose exec app php artisan import-from-api` para executar os jobs de importação de dados, também pode ser executado com o parametro `--type=` que pode receber: teams, games ou players.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### API Documentation
 
-## Laravel Sponsors
+## Authentication
+### Login
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/login`
+- **Body**: 
+```json
+{
+    "email": "admin@email.com",
+    "password": "12345678"
+}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Logout
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/logout`
+- **Authentication**: Bearer Token
 
-### Premium Partners
+## External API Tokens
+### Create Token
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/external-api-tokens`
+- **Authentication**: Bearer Token
+- **Body**:
+```json
+{
+    "name": "Sistema 1"
+}
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Update Token
+- **Method**: PUT
+- **URL**: `http://localhost:8888/api/external-api-tokens/{id}`
+- **Headers**: X-Authorization
+- **Body**:
+```json
+{
+    "name": "Teste 1"
+}
+```
 
-## Contributing
+### Delete Token
+- **Method**: DELETE
+- **URL**: `http://localhost:8888/api/external-api-tokens/{id}`
+- **Headers**: X-Authorization
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Teams
+### Create Team
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/teams`
+- **Headers**: X-Authorization
+- **Body**:
+```json
+{
+    "externalId": 3,
+    "conference": "East",
+    "division": "Southeast",
+    "city": "Atlanta",
+    "name": "Hawks",
+    "fullName": "Atlanta Hawks",
+    "abbreviation": "ATL"
+}
+```
 
-## Code of Conduct
+### Update Team
+- **Method**: PUT
+- **URL**: `http://localhost:8888/api/teams/{id}`
+- **Body**:
+```json
+{
+    "externalId": 5,
+    "conference": "East",
+    "division": "Southeast",
+    "city": "Atlanta",
+    "name": "Hawks",
+    "fullName": "Atlanta Hawks",
+    "abbreviation": "ATL"
+}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Get All Teams
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/teams`
+- **Query Parameters**: page
+- **Authentication**: Bearer Token or X-Authorization
 
-## Security Vulnerabilities
+### Get Team by ID
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/teams/{id}`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Delete Team
+- **Method**: DELETE
+- **URL**: `http://localhost:8888/api/teams/{id}`
 
-## License
+## Players
+### Create Player
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/players`
+- **Body**:
+```json
+{
+    "externalId": 20,
+    "firstName": "Stephen",
+    "lastName": "Curry",
+    "position": "G",
+    "height": "6-2",
+    "weight": "185",
+    "jerseyNumber": "30",
+    "college": "Davidson",
+    "country": "USA",
+    "draftYear": 2009,
+    "draftRound": 1,
+    "draftNumber": 7,
+    "teamId": 1
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Update Player
+- **Method**: PUT
+- **URL**: `http://localhost:8888/api/players/{id}`
+- **Body**: Same as Create Player
+
+### Get All Players
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/players`
+
+### Get Player by ID
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/players/{id}`
+
+### Delete Player
+- **Method**: DELETE
+- **URL**: `http://localhost:8888/api/players/{id}`
+
+## Games
+### Create Game
+- **Method**: POST
+- **URL**: `http://localhost:8888/api/games`
+- **Body**:
+```json
+{
+    "externalId": 1,
+    "date": "2018-10-16",
+    "datetime": "2018-10-17 00:00:00+00",
+    "season": 2018,
+    "status": "Final",
+    "period": 4,
+    "time": " ",
+    "postseason": false,
+    "homeTeamScore": 105,
+    "visitorTeamScore": 87,
+    "homeTeamId": 1,
+    "visitorTeamId": 2
+}
+```
+
+### Get All Games
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/games`
+
+### Get Game by ID
+- **Method**: GET
+- **URL**: `http://localhost:8888/api/games/{id}`
+
+### Delete Game
+- **Method**: DELETE
+- **URL**: `http://localhost:8888/api/games/{id}`
+
+## Licença
+
+Este projeto é licenciado sob a licença MIT. Para mais informações, por favor, leia o arquivo [LICENSE](LICENSE).
+
+

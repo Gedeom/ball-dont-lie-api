@@ -1,7 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\PlayerController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\ExternalApiTokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +18,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+Route::middleware(['auth.or.external'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    $resources = [
+        'teams' => TeamController::class,
+        'players' => PlayerController::class,
+        'games' => GameController::class,
+    ];
+
+    foreach($resources as $resource => $controller) {
+        Route::apiResource($resource, $controller)->except('destroy');
+    }
+
+    // Routes exclusive to admin
+    Route::middleware(['auth:sanctum', 'check.role:admin'])->group(function () use ($resources) {
+        Route::apiResource('external-api-tokens', ExternalApiTokenController::class)->only(['store', 'update', 'destroy']);
+
+        foreach($resources as $resource => $controller) {
+            Route::apiResource($resource, $controller)->only('destroy');
+        }
+    });
 });
