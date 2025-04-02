@@ -17,9 +17,9 @@
 ## Passo a passo para executar o projeto
 
 1. Execute o comando `docker-compose up -d` para criar os containers.
-2. Abra o navegador e acesse a URL `http://localhost:8888`.
-3. Clique no botão "Login" e faça o login com as credenciais do banco de dados.
-4. Clique no botão "Dashboard" e visualize as informações do projeto.
+2. Abra o navegador/postman e use a URL `http://localhost:8888`.
+3. Faça o faça o login com as credenciais de usuário fornecidas;
+4. Use o bearer token recebido para usar as outras rotas
 
 ## Executar Jobs de importação de dados
 
