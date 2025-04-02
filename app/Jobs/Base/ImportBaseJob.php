@@ -23,7 +23,7 @@ abstract class ImportBaseJob implements ShouldQueue
     public function __construct($cursor = 0)
     {
         $this->url = "https://api.balldontlie.io/v1/{$this->type}?per_page=100&seasons[]=2024";
-        $this->apiKey = env("BALL_DONT_LIE_API_KEY", "5d91eadc-3c27-46ff-b604-c79da28fb28f");
+        $this->apiKey = env("BALL_DONT_LIE_API_KEY", "eabe2808-4427-4606-832d-c83bf8f1cbc3");
         $this->cursor = $cursor;
     }
 
