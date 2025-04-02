@@ -1,0 +1,86 @@
+version: '3.1'
+
+services:
+  # PHP-FPM (Laravel)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ball-dont-lie/php
+    container_name: ball-dont-lie_app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:delegated
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - redis
+
+  # Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: ball-dont-lie_nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8888:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www:delegated
+      - ./entrypoint.sh:/entrypoint.sh
+    depends_on:
+      - app
+    command: ["/bin/sh", "/entrypoint.sh"]
+    networks:
+      - app-network
+
+  # MySQL (MariaDB)
+  db:
+    image: mysql:latest
+    container_name: ball-dont-lie_db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'ball_12345678'
+      MYSQL_DATABASE: db_ball_dont_lie
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    networks:
+      - app-network
+
+  # Redis
+  redis:
+    image: redis:latest
+    container_name: ball-dont-lie_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+# Networks
+networks:
+  app-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  dbdata:
+    driver: local
+  redis-data:
+    driver: local
